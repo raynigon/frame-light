@@ -57,12 +57,12 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: frame-light-armv6
-        path: v6
+        path: armv6
     - name: Create armv6 Release
       run: |
-        cp -r static v6/
-        cd v6
-        zip frame-light-armv6.zip frame-light static
+        cp -r static armv6/
+        cd armv6
+        zip -r frame-light-armv6.zip frame-light static
         mv frame-light-armv6.zip ../frame-light-armv6.zip
 #    - uses: actions/download-artifact@v2
 #      with:
