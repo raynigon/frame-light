@@ -1,0 +1,126 @@
+body{
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: black;
+}
+
+div, button {
+    box-sizing: border-box;
+}
+
+/**
+ *   State Container
+ */
+
+.state-container {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.frame-light-status {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: larger;
+    margin: 0px auto;
+}
+
+.error-logs {
+    color: white;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.frame-light-status img{
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.status-text {
+    padding-left: 25px;
+    display: inline-block;
+}
+
+
+/**
+ *   Switch Container
+ */
+
+.switch-container {
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.button-spacer {
+    width: 100%;
+    height: 10px;
+}
+
+@media (min-width: 100vh) {
+    .switch-container{
+        flex-direction: row;
+    }
+
+    .button-spacer {
+        width: 10px;
+        height: 100%;
+    }
+}
+
+.button {
+    flex-grow: 1.0;
+    width: 100%;
+    height: 100%;
+    font-size: 40pt;
+    font-weight: bold;
+    border: 0px;
+    cursor: pointer;
+}
+
+.button.on {
+    background-color: #009000;
+    color: white;
+}
+
+.button.off {
+    background-color: #A00000;
+    color: black;
+}
+
+/* Ripple effect */
+.ripple {
+    background-position: center;
+    transition: background 0.8s;
+}
+
+.ripple.on:hover {
+    background: #00B000 radial-gradient(circle, transparent 1%, #00B000 1%) center/12000%;
+}
+
+.ripple.off:hover {
+    background: #C00000 radial-gradient(circle, transparent 1%, #C00000 1%) center/12000%;
+}
+
+.ripple.on:active {
+    background-color: #00D000;
+}
+
+.ripple.off:active {
+    background-color: #FF0000;
+}
+
+.ripple:active {
+    background-size: 100%;
+    transition: background 0s;
+}

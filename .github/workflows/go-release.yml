@@ -1,0 +1,78 @@
+name: Go
+
+on:
+  push:
+    tags: [ v* ]
+
+jobs:
+  armv6_job:
+    runs-on: ubuntu-20.04
+    name: Build on ARMv6
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: uraimo/run-on-arch-action@v1.0.9
+        id: runcmd
+        with:
+          architecture: armv6
+          distribution: buster
+          run: |
+            apt update
+            apt install wget build-essential
+            wget https://storage.googleapis.com/golang/go1.14.linux-armv6l.tar.gz
+            tar -C /usr/local -xzf go1.14.linux-armv6l.tar.gz
+            /usr/local/go/bin/go get -v . 
+            /usr/local/go/bin/go build -v . 
+      - name: Upload artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: frame-light-armv6
+          path: frame-light
+  #armv7_job:
+  #  runs-on: ubuntu-20.04
+  #  name: Build on ARMv7 
+  #  steps:
+  #    - uses: actions/checkout@v2.1.0
+  #    - uses: uraimo/run-on-arch-action@v1.0.9
+  #      id: runcmd
+  #      with:
+  #        architecture: armv7
+  #        distribution: buster
+  #        run: |
+  #          apt update
+  #          apt install wget build-essential
+  #          wget https://storage.googleapis.com/golang/go1.14.linux-armv7l.tar.gz
+  #          tar -C /usr/local -xzf go1.14.linux-armv7l.tar.gz
+  #          /usr/local/go/bin/go get -v . 
+  #          /usr/local/go/bin/go build -v . 
+  #    - name: Upload artifact
+  #      uses: actions/upload-artifact@master
+  #      with:
+  #        name: frame-light-armv7
+  #        path: frame-light
+  release:
+    runs-on: ubuntu-latest
+    needs: [armv6_job] # armv7_job
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/download-artifact@v2
+      with:
+        name: frame-light-armv6
+        path: v6
+    - name: Create armv6 Release
+      run: |
+        cp -r static v6/
+        cd v6
+        zip frame-light-armv6.zip frame-light static
+        mv frame-light-armv6.zip ../frame-light-armv6.zip
+#    - uses: actions/download-artifact@v2
+#      with:
+#        name: frame-light-armv7
+#        path: v7
+    - name: GH Release
+      uses: softprops/action-gh-release@v0.1.5
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        # Newline-delimited list of path globs for asset files to upload
+        files: |
+            frame-light-armv6.zip
