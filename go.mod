@@ -12,7 +12,7 @@ require (
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-gntp v0.0.0-20171028142259-d20bc996b11f // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.8.0
 	github.com/stianeikeland/go-rpio v4.2.0+incompatible
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
 	golang.org/x/crypto v0.0.0-20191227163750-53104e6ec876 // indirect
