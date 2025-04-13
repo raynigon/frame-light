@@ -89,9 +89,9 @@ func (g *GpioServiceImpl) Off(name string) error {
 func (g *GpioServiceImpl) SetState(name string, state string) error {
 	if pin, ok := g.pins[name]; ok {
 		if state == On {
-			pin.Low()
-		} else if state == Off {
 			pin.High()
+		} else if state == Off {
+			pin.Low()
 		} else {
 			return fmt.Errorf("invalid state %s", state)
 		}
