@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/raynigon/frame-light/pkg/gpio"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -34,7 +35,8 @@ func (m *MQTTServiceImpl) handleMessage(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 	// Check if the state is valid
-	if content.State != "on" && content.State != "off" {
+	newState := strings.ToUpper(content.State)
+	if newState != gpio.On && newState != gpio.Off {
 		log.Errorf("Invalid state: %s", content.State)
 		return
 	}
@@ -49,7 +51,7 @@ func (m *MQTTServiceImpl) handleMessage(client mqtt.Client, msg mqtt.Message) {
 		return
 	}
 	// Set the state of the device
-	err = m.gpioService.SetState(deviceName, strings.ToUpper(content.State))
+	err = m.gpioService.SetState(deviceName, newState)
 	if err != nil {
 		log.Errorf("Error setting state: %s", err)
 		return
