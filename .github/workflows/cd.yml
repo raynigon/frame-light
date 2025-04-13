@@ -64,3 +64,12 @@ jobs:
           asset_path: dist/frame-light-armv7
           asset_name: frame-light-armv7
           asset_content_type: application/octet-stream
+      
+      # For workflow_dispatch, upload the binaries in the dist/ folder as artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          name: binaries
+          path: dist/
+
