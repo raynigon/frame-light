@@ -1,0 +1,33 @@
+{
+  "development": false,
+  "web": {
+    "enabled": true,
+    "port": 8080
+  },
+  "mqtt": {
+    "enabled": false,
+    "broker": "tcp://localhost:1883",
+    "client_id": "frame-light-client",
+    "authentication": {
+      "username": "",
+      "password": ""
+    },
+    "tls": {
+      "enabled": false,
+      "ca_certificate": "",
+      "client_key": "",
+      "client_certificate": ""
+    },
+    "topic": "frame-light"
+  },
+  "gpio": [
+    {
+      "id": 17,
+      "name": "pin1"
+    },
+    {
+      "id": 18,
+      "name": "pin2"
+    }
+  ]
+}
