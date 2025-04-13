@@ -1,0 +1,197 @@
+<html>
+
+<head>
+    <title>Frame Light - Controller</title>
+    <link rel="stylesheet" type="text/css" href="/ui/style.css">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="shortcut icon" type="image/x-icon" href="/ui/assets/touch-icon.ico">
+    <link rel="apple-touch-icon" href="/ui/assets/touch-icon.png">
+    <link rel="apple-touch-startup-image" href="/ui/assets/startup.png">
+    <script>
+        let devices = [];
+
+        async function fetchDevices() {
+            try {
+                const response = await fetch("/api/devices");
+                const result = await response.json();
+                devices = result.data;
+                renderDevices();
+            } catch (error) {
+                console.error("Error fetching devices:", error);
+            }
+        }
+
+        function renderDevices() {
+            const container = document.querySelector(".devices");
+            container.innerHTML = ""; // Clear existing content
+
+            const activeDevicesCount = document.querySelector("#active-devices-count");
+            activeDevicesCount.innerText = `${devices.length}`;
+
+            devices.forEach(device => {
+                const row = document.createElement("tr");
+                row.className = "device-row";
+
+                // First column is the status light
+                const statusCell = document.createElement("td");
+                statusCell.className = "device-status";
+                const lightBulb = document.createElement("img");
+                lightBulb.id = `device-status-image-${device.name}`;
+                lightBulb.src = device.state === "ON" ? "/ui/assets/light-bulb-on.png" : "/ui/assets/light-bulb-off.png";
+                lightBulb.alt = device.state;
+                lightBulb.width = 32;
+                lightBulb.height = 32;
+                statusCell.appendChild(lightBulb);
+                row.appendChild(statusCell);
+
+                // Second column is the device name
+                const nameCell = document.createElement("td");
+                nameCell.className = "device-name";
+                nameCell.innerText = device.name;
+                row.appendChild(nameCell);
+
+                // Third column is the toggle button
+                const toggleButtonCell = document.createElement("td");
+                const toggleButton = document.createElement("button");
+                toggleButton.id = `device-toggle-${device.name}`;
+                toggleButton.innerText = device.state === "ON" ? "Turn OFF" : "Turn ON";
+                toggleButton.onclick = () => toggleDeviceState(device.name, device.state);
+                toggleButtonCell.appendChild(toggleButton);
+                row.appendChild(toggleButtonCell);
+
+                container.appendChild(row);
+            });
+        }
+
+        async function toggleDeviceState(name, currentState) {
+            const newState = currentState === "ON" ? "OFF" : "ON";
+            try {
+                await fetch(`/api/devices/${name}/state`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ state: newState })
+                });
+                updateDeviceState(name, newState);
+            } catch (error) {
+                console.error(`Error toggling state for device ${name}:`, error);
+            }
+        }
+
+        async function updateDeviceState(name, newState) {
+            const device = devices.find(d => d.name === name);
+            if (device) {
+                device.state = newState;
+
+                // Update UI
+                const lightBulb = document.querySelector(`#device-status-image-${name}`);
+                const toggleButton = document.querySelector(`#device-toggle-${name}`);
+                if (lightBulb) {
+                    lightBulb.src = newState === "ON" ? "/ui/assets/light-bulb-on.png" : "/ui/assets/light-bulb-off.png";
+                }
+                if (toggleButton) {
+                    toggleButton.innerText = newState === "ON" ? "Turn OFF" : "Turn ON";
+                }
+            }
+
+        }
+
+        async function refreshDeviceStates() {
+            try {
+                const response = await fetch("/api/devices");
+                const result = await response.json();
+                const updatedDevices = result.data;
+
+                updatedDevices.forEach(updatedDevice => {
+                    const device = devices.find(d => d.name === updatedDevice.name);
+                    if (device) {
+                        device.state = updatedDevice.state;
+
+                        // Update UI
+                        const lightBulb = document.querySelector(`#device-status-image-${device.name}`);
+                        const toggleButton = document.querySelector(`#device-toggle-${device.name}`);
+                        if (lightBulb) {
+                            lightBulb.src = device.state === "ON" ? "/ui/assets/light-bulb-on.png" : "/ui/assets/light-bulb-off.png";
+                        }
+                        if (toggleButton) {
+                            toggleButton.innerText = device.state === "ON" ? "Turn OFF" : "Turn ON";
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error refreshing device states:", error);
+            }
+        }
+
+        function loaded() {
+            fetchDevices();
+            setInterval(refreshDeviceStates, 1000);
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        button {
+            background-color: #FFFFFF;
+            color: #333333;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #606060;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header .actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .devices {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            table-layout: fixed;
+            columns: 10% 70% 20%;
+        }
+
+        .devices tr {
+            background-color: #101010;
+            color: #f4f4f4;
+        }
+    </style>
+</head>
+
+<body onload="loaded()">
+    <div class="header">
+        <h1>Frame Light Controller</h1>
+        <div class="actions">
+            <div class="meta-data"><span>Active Devices:</span>&nbsp;<span id="active-devices-count">0</span></div>
+            <button id="refresh-button" onclick="fetchDevices()">Refresh</button>
+        </div>
+    </div>
+    <table class="devices"></table>
+</body>
+
+</html>
