@@ -20,16 +20,19 @@ jobs:
         with:
           go-version: 1.24
 
+      # Create dist directory
+      - name: Create dist directory
+        run: mkdir -p dist
+
       # Build for ARMv6
       - name: Build for ARMv6
         run: |
-          mkdir -p dist
-          GOOS=linux GOARCH=arm GOARM=6 go build -o dist/frame-light-armv6
+          GOOS=linux GOARCH=arm GOARM=6 go build -o dist/frame-light-armv6 cmd/main.go
 
       # Build for ARMv7
       - name: Build for ARMv7
         run: |
-          GOOS=linux GOARCH=arm GOARM=7 go build -o dist/frame-light-armv7
+          GOOS=linux GOARCH=arm GOARM=7 go build -o dist/frame-light-armv7 cmd/main.go
 
       # Create a release and upload binaries
       - name: Create Release
