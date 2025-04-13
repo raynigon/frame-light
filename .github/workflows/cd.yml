@@ -24,6 +24,11 @@ jobs:
       - name: Create dist directory
         run: mkdir -p dist
 
+      # Write the tag version to a the cmd/version.txt file
+      - name: Write version to file
+        if: github.event_name != 'workflow_dispatch'
+        run: echo "${{ github.ref_name }}" > cmd/version.txt
+
       # Build for ARMv6
       - name: Build for ARMv6
         run: |

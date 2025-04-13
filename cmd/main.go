@@ -1,9 +1,13 @@
 package main
 
 import (
+	_ "embed"
+	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/raynigon/frame-light/pkg/config"
@@ -12,6 +16,47 @@ import (
 	"github.com/raynigon/frame-light/pkg/mqtt"
 	log "github.com/sirupsen/logrus"
 )
+
+//go:embed version.txt
+var embeddedVersion string
+
+var version = strings.TrimSpace(embeddedVersion)
+
+func printHelp() {
+	fmt.Println("Usage: frame-light [OPTIONS]")
+	fmt.Println()
+	fmt.Println("Options:")
+	fmt.Println("  --version          Display the application version and exit")
+	fmt.Println("  --help             Display this help message and exit")
+	fmt.Println("  --config <FILE>    Specify the configuration file location")
+	fmt.Println("  -c <FILE>          Alias for --config")
+}
+
+func parseArguments() string {
+	// Define flags
+	versionFlag := flag.Bool("version", false, "Display the application version and exit")
+	helpFlag := flag.Bool("help", false, "Display help and exit")
+	configFlag := flag.String("config", "./config.json", "Specify the configuration file location")
+	flag.StringVar(configFlag, "c", "./config.json", "Alias for --config")
+
+	// Parse flags
+	flag.Parse()
+
+	// Handle --version
+	if *versionFlag {
+		fmt.Printf("Frame Light - Version %s\n", version)
+		os.Exit(0)
+	}
+
+	// Handle --help
+	if *helpFlag {
+		printHelp()
+		os.Exit(0)
+	}
+
+	// Return the config file location
+	return *configFlag
+}
 
 func shutdownHook(done chan struct{}) {
 	c := make(chan os.Signal, 1) // we need to reserve to buffer size 1, so the notifier are not blocked
@@ -22,22 +67,9 @@ func shutdownHook(done chan struct{}) {
 	close(done)
 }
 
-func getConfigLocation(args []string) string {
-	configLocation := "./config.json"
-	for i, arg := range args {
-		if arg == "-c" || arg == "--config" {
-			if i+1 < len(args) {
-				return args[i+1]
-			}
-			log.Fatal("No config file provided")
-		}
-	}
-	return configLocation
-}
-
 func main() {
-	// Check arguments for config file location
-	configLocation := getConfigLocation(os.Args[1:])
+	// Parse arguments
+	configLocation := parseArguments()
 
 	// Load Config
 	config, err := config.LoadConfig(configLocation)
@@ -47,9 +79,6 @@ func main() {
 
 	// Initialize GPIO service
 	gpioService := gpio.NewGpioService(config)
-	if err != nil {
-		log.Fatal("Error initializing GPIO service: ", err)
-	}
 	defer gpioService.Close()
 
 	// Check if Web UI is enabled
