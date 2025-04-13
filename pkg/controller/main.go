@@ -11,8 +11,8 @@ func RegisterHandlers(gpioService gpio.GpioService) {
 	apiController := &APIController{gpioService: gpioService}
 	// API handler for GPIO
 	http.HandleFunc("GET /api/devices", apiController.ListAllDevices)
-	http.HandleFunc("GET /api/devices/{name}", apiController.GetDeviceEndpoint)
-	http.HandleFunc("POST /api/devices/{name}/state", apiController.UpdateDeviceStateEndpoint)
+	http.HandleFunc("GET /api/devices/{name}", apiController.GetDevice)
+	http.HandleFunc("POST /api/devices/{name}/state", apiController.UpdateDeviceState)
 	// Handler for UI requests
 	http.HandleFunc("/ui/", UIHandler)
 	// Redirect root to UI

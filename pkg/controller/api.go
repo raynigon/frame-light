@@ -55,7 +55,7 @@ func (c *APIController) ListAllDevices(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (c *APIController) GetDeviceEndpoint(w http.ResponseWriter, r *http.Request) {
+func (c *APIController) GetDevice(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/"), "/")
 	if len(pathParts) != 2 || pathParts[0] != "devices" {
 		http.Error(w, "Not found", http.StatusNotFound)
@@ -63,10 +63,6 @@ func (c *APIController) GetDeviceEndpoint(w http.ResponseWriter, r *http.Request
 	}
 
 	name := pathParts[1]
-	c.GetDevice(w, r, name)
-}
-
-func (c *APIController) GetDevice(w http.ResponseWriter, r *http.Request, name string) {
 	state, err := c.gpioService.GetState(name)
 	if err != nil {
 		writeJSONResponse(w, http.StatusInternalServerError, APIResponse{
@@ -88,7 +84,7 @@ func (c *APIController) GetDevice(w http.ResponseWriter, r *http.Request, name s
 	})
 }
 
-func (c *APIController) UpdateDeviceStateEndpoint(w http.ResponseWriter, r *http.Request) {
+func (c *APIController) UpdateDeviceState(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(strings.TrimPrefix(r.URL.Path, "/api/"), "/")
 	if len(pathParts) != 3 || pathParts[0] != "devices" || pathParts[2] != "state" {
 		http.Error(w, "Not found", http.StatusNotFound)
@@ -96,10 +92,6 @@ func (c *APIController) UpdateDeviceStateEndpoint(w http.ResponseWriter, r *http
 	}
 
 	name := pathParts[1]
-	c.UpdateDeviceState(w, r, name)
-}
-
-func (c *APIController) UpdateDeviceState(w http.ResponseWriter, r *http.Request, name string) {
 	var requestBody struct {
 		State string `json:"state"`
 	}
