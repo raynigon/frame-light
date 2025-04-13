@@ -23,13 +23,13 @@ var embeddedVersion string
 var version = strings.TrimSpace(embeddedVersion)
 
 func printHelp() {
-	fmt.Println("Usage: frame-light [OPTIONS]")
+	fmt.Println("Usage: gpio2mqtt [OPTIONS]")
 	fmt.Println()
 	fmt.Println("Options:")
-	fmt.Println("  --version          Display the application version and exit")
-	fmt.Println("  --help             Display this help message and exit")
-	fmt.Println("  --config <FILE>    Specify the configuration file location")
-	fmt.Println("  -c <FILE>          Alias for --config")
+	fmt.Println("  -version          Display the application version and exit")
+	fmt.Println("  -help             Display this help message and exit")
+	fmt.Println("  -config <FILE>    Specify the configuration file location")
+	fmt.Println("  -c <FILE>         Alias for --config")
 }
 
 func parseArguments() string {
@@ -44,7 +44,7 @@ func parseArguments() string {
 
 	// Handle --version
 	if *versionFlag {
-		fmt.Printf("Frame Light - Version %s\n", version)
+		fmt.Printf("%s\n", version)
 		os.Exit(0)
 	}
 
