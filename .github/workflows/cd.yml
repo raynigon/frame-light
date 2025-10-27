@@ -52,7 +52,7 @@ jobs:
       
       # For workflow_dispatch, upload the binaries in the dist/ folder as artifacts
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: github.event_name == 'workflow_dispatch'
         with:
           name: binaries
